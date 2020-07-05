@@ -20,7 +20,7 @@ This is my development docker build for multiple projects.
 5. Jenkins alpine (localhost:8081)
 6. redis-commander:latest (localhost:8082)
 
-Features:
+#### Features
 1. Nginx will only use the php xdebug container if `XDEBUG_SESSION` cookie is active. Otherwise, the normal php container without xdebug installed will be used. This increased my development speed. Use an empty value for the cookie.
 2. If you are a mac user, there is a script to execute to mount the data volume as NFS volume for performance reasons.
 3. Use this docker setup for multiple projects at once.
@@ -79,7 +79,7 @@ Volumes will become this prefix. If you change it, some details in this guide wi
 
 #### Folder Structure / Naming
 
-1. Folder Structure / Naming
+1. Folder Structure / Naming \
 Pull this repository and put it at the same level as your project root dirs.
 
 ```
@@ -90,10 +90,10 @@ Pull this repository and put it at the same level as your project root dirs.
 ---- your-third-project.test
 ```
 
-2. Environment file
+2. Environment file \
 Copy the file `.env.dist` to `.env` at the same level.
 
-3. Enviroment variables
+3. Enviroment variables \
 Replace the string "%%PATH_TO_WORKSPACE%%" in your `.env` file with the absolute path to your workspace directory.
 ```
 example value: "/my/path/to/workspace"
@@ -102,7 +102,7 @@ example value: "/my/path/to/workspace"
 Set the credentials as you like. They will be used for every service. \
 For example `mariadb` `kibana` `redis` etc...
 
-4. Hosts file
+4. Hosts file \
 Use the Windows/Unix/Mac hosts file to add local development domains for your projects.
 This is an example:
 ```
@@ -113,7 +113,7 @@ This is an example:
 
 Remember that this domain name is also your directory name of your project.
 
-5. Build
+5. Build \
 Execute the commands and wait for the build.
 
 ```
@@ -121,7 +121,7 @@ cd /path/to/workspace/docker-setup
 docker-compose up -d 
 ```
 
-6. Docker for Mac
+6. Docker for Mac \
 Docker for mac users has a slow file sync by default. 
 After the installation! You can execute following commands to get more performance.
 It will mount your data workspace volume as nfs.
@@ -132,12 +132,13 @@ docker-compose volume rm pws_pws-volume-data
 ./scripts/nfs_for_native_docker.sh
 ```
 
-7. From time to time you will get more projects. What your need to do.
+7. From time to time you will add more projects. \
 For example `super-project.test`
 - Add this line to your hosts file `127.0.0.1 super-project.test`
 - Create a project directory `/path/to/workspace/super-project.test`
 - Create a public directory `/path/to/workspace/super-project.test/public`
 - Create your index.php file `/path/to/workspace/super-project.test/public/index.php`
+- Start coding.
 
 If you don´t like to have one docker stack for all of your projects, you can create a custom docker build for each based on this repository.
 You don´t have to change much.

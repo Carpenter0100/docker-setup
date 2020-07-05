@@ -144,3 +144,10 @@ If you don´t like to have one docker stack for all of your projects, you can cr
 You don´t have to change much.
 
 Have fun!
+
+### Credits
+The idea of multiple php containers comes from here:
+https://jtreminio.com/blog/developing-at-full-speed-with-xdebug/
+
+The script `./scripts/nfs_for_native_docker.sh` for the nfs mount is from here:
+https://medium.com/@sean.handley/how-to-set-up-docker-for-mac-with-native-nfs-145151458adc

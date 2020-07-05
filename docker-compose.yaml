@@ -1,0 +1,111 @@
+version: '3'
+services:
+  nginx:
+    container_name: pws_dev_nginx
+    build: src/nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - pws-volume-data:/var/www
+      - ./src/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./src/nginx/sites/:/etc/nginx/sites-available
+      - ./src/nginx/conf.d/:/etc/nginx/conf.d
+    networks:
+      - pws_net
+
+  php:
+    container_name: pws_dev_php
+    build: src/php
+    volumes:
+      - pws-volume-data:/var/www
+      - pws-volume-session-share:/tmp
+    environment:
+      APP_ENVIRONMENT: "dev"
+      DB_HOST: "localhost"
+      DB_PORT: "3306"
+      DB_USER: "${DEFAULT_USER}"
+      DB_PASSWORD: "${DEFAULT_PASSWORD}"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: "${DEFAULT_PASSWORD}"
+      ELASTICSEARCH_HOST: "elasticsearch"
+      ELASTICSEARCH_PORT: "9200"
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_PORT: "5672"
+    networks:
+      - pws_net
+
+  php-xdebug:
+    container_name: pws_dev_php_xdebug
+    build: src/php-xdebug
+    volumes:
+      - pws-volume-data:/var/www
+      - pws-volume-session-share:/tmp
+    depends_on:
+      - php
+    environment:
+      APP_ENVIRONMENT: "dev"
+      DB_HOST: "localhost"
+      DB_PORT: "3306"
+      DB_USER: "${DEFAULT_USER}"
+      DB_PASSWORD: "${DEFAULT_PASSWORD}"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: "${DEFAULT_PASSWORD}"
+      ELASTICSEARCH_HOST: "elasticsearch"
+      ELASTICSEARCH_PORT: "9200"
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_PORT: "5672"
+    networks:
+      - pws_net
+
+  mariadb:
+    container_name: pws_dev_mariadb
+    build: src/mariadb
+    volumes:
+      - pws-volume-mariadb:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DEFAULT_PASSWORD}"
+      MYSQL_USER: "${DEFAULT_USER}"
+      MYSQL_PASSWORD: "${DEFAULT_PASSWORD}"
+    networks:
+      - pws_net
+
+  redis:
+    container_name: pws_dev_redis
+    image: redis:alpine
+    hostname: redis
+    command: redis-server --requirepass ${DEFAULT_PASSWORD}
+    volumes:
+      - pws-volume-redis:/data:cached
+    ports:
+      - "6379:6379"
+    networks:
+      - pws_net
+
+  mailhog:
+    container_name: pws_dev_mailhog
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - pws_net
+
+volumes:
+  pws-volume-mariadb:
+  pws-volume-redis:
+  pws-volume-session-share:
+  pws-volume-data:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock,hard,nointr,actimeo=2,nfsvers=3
+      device: ":/${WORKSPACE_PATH}"
+
+networks:
+  pws_net:
+    driver: bridge

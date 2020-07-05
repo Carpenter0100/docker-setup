@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="docker" default="docker:init:dev" basedir=".">
+
+    <target name="docker:init:dev" description="kill dev, build dev">
+        <input propertyName="askDevSetup" message="Would you really like to continue? Existing container and volumes will be removed." validArgs="y,n" />
+        <if>
+            <equals arg1="${askDevSetup}" arg2="y"/>
+            <then>
+                <phingcall target="docker:env" />
+                <sleep seconds="5" />
+                <phingcall target="docker:down" />
+                <sleep seconds="5" />
+                <phingcall target="docker:up" />
+                <sleep seconds="5" />
+                <phingcall target="docker:nfs" />
+            </then>
+            <else>
+                <echo message="*** Aborted ***" />
+            </else>
+        </if>
+    </target>
+
+    <target name="docker:ps">
+        <exec passthru="true" command="docker ps" />
+    </target>
+
+    <target name="docker:up">
+        <exec passthru="true" command="docker-compose up -d --build" />
+    </target>
+
+    <target name="docker:stop">
+        <exec passthru="true" command="docker-compose stop" />
+    </target>
+
+    <target name="docker:env" hidden="true" description="create .env">
+        <resolvepath propertyName="workspacePath" file="./.." />
+        <copy file=".env.dist" tofile=".env" overwrite="true">
+            <filterchain>
+                <replacetokens begintoken="%%" endtoken="%%">
+                    <token key="PATH_TO_WORKSPACE" value="/Users/mrn/dev/privateworkspace" />
+                </replacetokens>
+            </filterchain>
+        </copy>
+    </target>
+
+    <target name="docker:down" hidden="true">
+        <exec passthru="true" command="docker-compose down" />
+    </target>
+
+    <target name="docker:nfs" hidden="true" description="mac osx only!">
+        <condition property="isMacOsx" value="true" else="false">
+            <and>
+                <os family="mac"/>
+                <os family="Unix"/>
+            </and>
+        </condition>
+
+        <if>
+            <equals arg1="${isMacOsx}" arg2="true" />
+            <then>
+                <phingcall target="docker:down" />
+                <sleep seconds="5" />
+                <phingcall target="docker:volume:prune" />
+                <exec passthru="true" command="./scripts/nfs_for_native_docker.sh" />
+                <phingcall target="docker:up" />
+            </then>
+        </if>
+    </target>
+
+    <target name="docker:volume:prune">
+        <exec passthru="true" command="docker volume rm pws_pws-volume-data" />
+        <exec passthru="true" command="docker volume rm pws_pws-volume-mariadb" />
+        <exec passthru="true" command="docker volume rm pws_pws-volume-redis" />
+        <exec passthru="true" command="docker volume rm pws_pws-volume-session-share" />
+        <exec passthru="true" command="docker volume rm pws_pws-volume-elasticsearch" />
+        <exec passthru="true" command="docker volume rm pws_pws-volume-jenkins" />
+        <exec passthru="true" command="docker volume rm pws_pws-volume-rabbitmq" />
+        <sleep seconds="2" />
+        <echo msg="Remaining Volumes:" />
+        <exec passthru="true" command="docker volume ls" />
+    </target>
+</project>

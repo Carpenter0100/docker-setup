@@ -146,8 +146,8 @@ You don´t have to change much.
 Have fun!
 
 ### Credits
-The idea of multiple php containers comes from here:
+The idea of multiple php containers comes from here: \
 https://jtreminio.com/blog/developing-at-full-speed-with-xdebug/
 
-The script `./scripts/nfs_for_native_docker.sh` for the nfs mount is from here:
+The script `./scripts/nfs_for_native_docker.sh` for the nfs mount is from here: \
 https://medium.com/@sean.handley/how-to-set-up-docker-for-mac-with-native-nfs-145151458adc

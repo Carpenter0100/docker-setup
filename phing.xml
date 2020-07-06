@@ -37,7 +37,7 @@
         <copy file=".env.dist" tofile=".env" overwrite="true">
             <filterchain>
                 <replacetokens begintoken="%%" endtoken="%%">
-                    <token key="PATH_TO_WORKSPACE" value="/Users/mrn/dev/privateworkspace" />
+                    <token key="PATH_TO_WORKSPACE" value="${workspacePath}" />
                 </replacetokens>
             </filterchain>
         </copy>
